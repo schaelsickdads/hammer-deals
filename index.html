@@ -180,7 +180,7 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
             <button class="btn ghost" type="button" id="out-copy">Nachricht kopieren</button>
             <button class="btn ghost" type="button" id="out-new">Neues Inserat</button>
           </div>
-          <p class="infoline" style="margin-top:10px">Foto? Häng es in der Gruppe direkt an die Nachricht.</p>
+          <p class="infoline" style="margin-top:10px">Foto? Häng es in der Gruppe direkt an die Nachricht. Ist es weg, antworte in der Gruppe auf deine Nachricht mit „Vergeben“ oder lösche sie mit „Für alle löschen“.</p>
         </div>
       </form>
       <aside class="preview" aria-label="Vorschau">
@@ -196,16 +196,6 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
       <p class="infoline" id="itemNote" hidden style="margin-top:12px"></p>
       <div class="acts" style="margin-top:14px">
         <button class="btn" type="button" id="askBtn">Anfragen</button>
-        <button class="btn ghost" type="button" id="doneBtn">Ich habe es vergeben</button>
-      </div>
-      <div class="result" id="doneBox" hidden>
-        <h3>Als vergeben melden</h3>
-        <p class="infoline">Schick diese Nachricht in die Gruppe. Lösch außerdem deine ursprüngliche Nachricht dort mit „Für alle löschen“, dann verschwindet auch der alte Link.</p>
-        <div class="f"><label for="done-msg">Nachricht</label><textarea id="done-msg" readonly></textarea></div>
-        <div class="acts">
-          <a class="btn" id="done-wa" target="_blank" rel="noopener" href="https://wa.me/">In WhatsApp senden</a>
-          <button class="btn ghost" type="button" id="done-copy">Nachricht kopieren</button>
-        </div>
       </div>
       <div class="result" id="askBox" hidden>
         <h3 id="askH">Anfrage senden</h3>
@@ -258,7 +248,7 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     <ul>
       <li>Hier bieten Dads privat Gebrauchtes an. Kein Gewerbe, keine Gewähr, keine Haftung des Betreibers. Der Vertrag entsteht nur zwischen den Beteiligten.</li>
       <li>Nicht erlaubt: Waffen, Medikamente, Tiere, Alkohol und Tabak zum Verkauf, Gestohlenes und alles Rechtswidrige.</li>
-      <li>Inserate laufen nach der gewählten Zeit automatisch ab. Rechtswidrige Inserate kann der Admin für alle entfernen.</li>
+      <li>Inserate laufen nach der gewählten Zeit automatisch ab. Ist etwas vergeben, antwortet der Anbieter in der Gruppe auf seine Nachricht mit „Vergeben“ oder löscht sie für alle. Rechtswidrige Inserate kann der Admin für alle entfernen.</li>
       <li>Verstoß gesehen? Schreib dem Admin der Gruppe.</li>
     </ul>
 
@@ -430,7 +420,7 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     $('ask-when').innerHTML=WHEN.map(function(w){return '<option>'+esc(w)+'</option>'}).join('');
     $('ask-offer').value='';$('ask-name').value='';$('ask-note').value='';
     syncOffer();
-    $('doneBox').hidden=true;$('askBox').hidden=false;$('ask1').hidden=false;$('ask2').hidden=true;
+    $('askBox').hidden=false;$('ask1').hidden=false;$('ask2').hidden=true;
     $('ask-act').focus();
   });
   $('askMake').addEventListener('click',async function(){
@@ -443,15 +433,6 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     $('ask1').hidden=true;$('ask2').hidden=false;
   });
   $('ask-copy').addEventListener('click',function(){copy($('ask-msg'))});
-
-  /* Vergeben melden */
-  $('doneBtn').addEventListener('click',function(){
-    if(!current)return;
-    var m='Hammer-Deal | Vergeben: '+current.ti+'. Danke an alle, die gefragt haben!';
-    $('done-msg').value=m;$('done-wa').href='https://wa.me/?text='+encodeURIComponent(m);
-    $('askBox').hidden=true;$('doneBox').hidden=false;
-  });
-  $('done-copy').addEventListener('click',function(){copy($('done-msg'))});
 
   /* Routing */
   async function route(){
@@ -466,8 +447,8 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
       current=data;
       var st=stateOf(data),ok=st==='ok';
       $('itemCard').innerHTML=card(data,st);
-      $('askBox').hidden=true;$('doneBox').hidden=true;
-      $('askBtn').hidden=!ok;$('doneBtn').hidden=!ok;
+      $('askBox').hidden=true;
+      $('askBtn').hidden=!ok;
       $('itemNote').hidden=ok;
       $('itemNote').textContent=st==='expired'?'Dieses Inserat ist abgelaufen. Frag in der Gruppe, ob es noch zu haben ist.':'Dieses Inserat wurde entfernt.';
       show('viewItem');
