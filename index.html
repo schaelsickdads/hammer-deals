@@ -96,6 +96,12 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
 .bannerbox p{margin:6px 0 0;font-weight:400}
 .nodata{border:2px dashed var(--line);border-radius:14px;padding:22px;max-width:560px}
 .linkrow{margin:26px 0 0}
+.card.gone{opacity:.62}
+.card.gone h3{text-decoration:line-through;text-decoration-thickness:2px}
+.tag{display:inline-block;border:1.5px solid currentColor;border-radius:4px;padding:0 6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;vertical-align:middle}
+.nr{color:var(--muted);font-size:.78rem}
+.bannerbox .facts dt{color:inherit;opacity:.75}
+.bannerbox .facts dd{font-weight:700}
 
 .overlay{position:fixed;inset:0;background:rgba(10,30,42,.65);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--bg);width:100%;max-width:620px;max-height:100%;overflow-y:auto;border-radius:18px 18px 0 0;padding:20px 16px 24px}
@@ -159,6 +165,9 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
           <div class="f"><label for="ff-name">Dein Vorname</label><input id="ff-name" maxlength="30" autocomplete="given-name"></div>
           <div class="f"><label for="ff-place">Stadtteil zum Abholen</label><input id="ff-place" maxlength="40" placeholder="nur Stadtteil, keine Adresse"></div>
         </div>
+        <div class="f"><label for="ff-valid">Wie lange soll es gelten?</label>
+          <select id="ff-valid"><option value="7">7 Tage</option><option value="14" selected>14 Tage</option><option value="30">30 Tage</option><option value="60">60 Tage</option></select>
+          <span class="hint">Danach erscheint das Inserat für alle automatisch als abgelaufen.</span></div>
         <p class="infoline">Schreib keine Adresse und keine Telefonnummer hinein. Wer Interesse hat, meldet sich über einen Anfrage-Link in der Gruppe.</p>
         <p class="err" id="err" role="alert"></p>
         <button class="btn" type="submit" id="make">Link erstellen</button>
@@ -175,7 +184,6 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
         </div>
       </form>
       <aside class="preview" aria-label="Vorschau">
-        <p class="lbl">So sieht es aus</p>
         <div id="pv"></div>
       </aside>
     </div>
@@ -185,14 +193,29 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
   <section id="viewItem" hidden>
     <div class="single">
       <div id="itemCard"></div>
+      <p class="infoline" id="itemNote" hidden style="margin-top:12px"></p>
       <div class="acts" style="margin-top:14px">
         <button class="btn" type="button" id="askBtn">Anfragen</button>
+        <button class="btn ghost" type="button" id="doneBtn">Ich habe es vergeben</button>
+      </div>
+      <div class="result" id="doneBox" hidden>
+        <h3>Als vergeben melden</h3>
+        <p class="infoline">Schick diese Nachricht in die Gruppe. Lösch außerdem deine ursprüngliche Nachricht dort mit „Für alle löschen“, dann verschwindet auch der alte Link.</p>
+        <div class="f"><label for="done-msg">Nachricht</label><textarea id="done-msg" readonly></textarea></div>
+        <div class="acts">
+          <a class="btn" id="done-wa" target="_blank" rel="noopener" href="https://wa.me/">In WhatsApp senden</a>
+          <button class="btn ghost" type="button" id="done-copy">Nachricht kopieren</button>
+        </div>
       </div>
       <div class="result" id="askBox" hidden>
         <h3 id="askH">Anfrage senden</h3>
         <div id="ask1">
           <p class="infoline">Du gibst weder Namen noch Nummer ein. Du schickst den Link in die Gruppe, der Anbieter sieht deine Anfrage, sobald er ihn öffnet.</p>
-          <div class="f"><label for="ask-note">Kurze Nachricht (optional)</label><input id="ask-note" maxlength="140" placeholder="z. B. Ich könnte Samstag abholen"></div>
+          <div class="f"><label for="ask-act">Was möchtest du?</label><select id="ask-act"></select></div>
+          <div class="f" id="ask-offer-g" hidden><label for="ask-offer" id="ask-offer-l">Angebot</label><input id="ask-offer" maxlength="60"></div>
+          <div class="f"><label for="ask-when">Wann könntest du abholen?</label><select id="ask-when"></select></div>
+          <div class="f"><label for="ask-name">Dein Vorname (optional)</label><input id="ask-name" maxlength="30" autocomplete="given-name"></div>
+          <div class="f"><label for="ask-note">Notiz (optional)</label><input id="ask-note" maxlength="140" placeholder="z. B. Ich könnte Samstag nach dem Training"></div>
           <button class="btn" type="button" id="askMake">Link erstellen</button>
         </div>
         <div id="ask2" hidden>
@@ -235,12 +258,13 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     <ul>
       <li>Hier bieten Dads privat Gebrauchtes an. Kein Gewerbe, keine Gewähr, keine Haftung des Betreibers. Der Vertrag entsteht nur zwischen den Beteiligten.</li>
       <li>Nicht erlaubt: Waffen, Medikamente, Tiere, Alkohol und Tabak zum Verkauf, Gestohlenes und alles Rechtswidrige.</li>
+      <li>Inserate laufen nach der gewählten Zeit automatisch ab. Rechtswidrige Inserate kann der Admin für alle entfernen.</li>
       <li>Verstoß gesehen? Schreib dem Admin der Gruppe.</li>
     </ul>
 
     <h3>Datenschutz</h3>
     <p>Diese Seite speichert keine Daten über dich. Inserate und Anfragen stehen ausschließlich im Link, den du selbst in die Gruppe schickst. Der Teil des Links nach dem # wird beim Aufruf nicht an den Server übertragen. Wer den Link hat, kann das Inserat lesen. Schreib deshalb keine Adresse und keine Telefonnummer hinein.</p>
-    <p>Die Seite setzt keine Cookies und lädt keine Inhalte von Dritten nach. Gehostet wird bei GitHub Pages (GitHub Inc. / Microsoft, USA). Beim Aufruf verarbeitet der Hoster technisch notwendig deine IP-Adresse in Server-Protokollen (Art. 6 Abs. 1 lit. f DSGVO), dabei kann sie in die USA übermittelt werden.</p>
+    <p>Die Seite setzt keine Cookies und lädt keine Inhalte von Dritten nach. Beim Öffnen eines Inserats ruft sie vom selben Server eine Liste entfernter Inserat-Nummern ab, darin stehen keine Personendaten. Gehostet wird bei GitHub Pages (GitHub Inc. / Microsoft, USA). Beim Aufruf verarbeitet der Hoster technisch notwendig deine IP-Adresse in Server-Protokollen (Art. 6 Abs. 1 lit. f DSGVO), dabei kann sie in die USA übermittelt werden.</p>
     <p>Du hast Rechte auf Auskunft, Berichtigung, Löschung und Beschwerde bei einer Datenschutzaufsichtsbehörde. Wende dich dafür an den Admin der Gruppe.</p>
 
     <div class="acts"><button class="btn" type="button" id="lg-close">Schließen</button></div>
@@ -253,12 +277,22 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
   var TYPES={swap:'Tauschen',sell:'Verkaufen',lend:'Verleihen'};
   var VERB={swap:'Tausche',sell:'Verkaufe',lend:'Verleihe'};
   var CATS=['Kinder & Baby','Werkzeug','Garten & Grill','Sport & Outdoor','Technik','Spiele & Bücher','Haushalt','Sonstiges'];
+  var WHEN=['Flexibel','Heute','Diese Woche','Am Wochenende','Nach Absprache'];
+  var ACTS={
+    sell:[['buy','Ich nehme es zum Preis'],['offer','Ich biete weniger'],['ask','Ich habe eine Frage']],
+    swap:[['swap','Ich tausche gern'],['ask','Ich habe eine Frage']],
+    lend:[['lend','Ich möchte es leihen'],['ask','Ich habe eine Frage']]
+  };
+  var OFFER={offer:['Mein Gebot in Euro','z. B. 30'],swap:['Mein Tauschangebot','z. B. Laufrad, wenig gefahren'],lend:['Für wie lange?','z. B. Wochenende']};
+  var DAY=864e5;
   var $=function(id){return document.getElementById(id)};
-  var current=null;
+  var current=null,goneIds=null;
 
   function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML}
   function toast(t){var el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){el.hidden=true},3000)}
   function base(){return location.href.split('#')[0]}
+  function rid(){return Math.random().toString(36).slice(2,8)}
+  function isNum(s){return /^[\d.,]+$/.test(s)}
   function rel(ts){
     var m=Math.floor((Date.now()-ts)/60000);
     if(m<2)return 'gerade eben';
@@ -266,6 +300,17 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     var h=Math.floor(m/60);if(h<24)return 'vor '+h+' Std.';
     var d=Math.floor(h/24);if(d<14)return 'vor '+d+(d===1?' Tag':' Tagen');
     return new Date(ts).toLocaleDateString('de-DE');
+  }
+  function actLabel(a){var r='';Object.keys(ACTS).forEach(function(k){ACTS[k].forEach(function(x){if(x[0]===a)r=x[1]})});return r}
+  function left(it){
+    if(!it.e)return it.v?'gültig '+it.v+' Tage':'';
+    var d=Math.ceil((it.e-Date.now())/DAY);
+    return d===1?'noch 1 Tag':'noch '+d+' Tage';
+  }
+  function stateOf(it){
+    if(it.e&&Date.now()>it.e)return 'expired';
+    if(it.id&&goneIds&&goneIds.indexOf(it.id)>=0)return 'removed';
+    return 'ok';
   }
 
   /* Inhalt im Link: komprimiert und base64url, nur im Teil nach dem # */
@@ -291,16 +336,34 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     return JSON.parse(new TextDecoder().decode(bytes));
   }
 
-  function card(it){
+  /* Liste entfernter Inserate: eine kleine Datei auf demselben Server (gone.json), vom Admin gepflegt */
+  async function loadGone(){
+    if(goneIds)return;
+    goneIds=[];
+    try{
+      var c=new AbortController(),t=setTimeout(function(){c.abort()},2500);
+      var r=await fetch(new URL('gone.json',base()).href,{cache:'no-cache',signal:c.signal});
+      clearTimeout(t);
+      if(r.ok){var j=await r.json();if(j&&Array.isArray(j.ids))goneIds=j.ids.map(String)}
+    }catch(e){}
+  }
+
+  function card(it,st){
+    st=st||'ok';
     var t=TYPES[it.t]?it.t:'sell',f='';
     if(t==='sell')f+='<dt>Preis</dt><dd><span class="price">'+(it.p?esc(it.p)+' €':'n. A.')+'</span></dd>';
     if(t==='swap')f+='<dt>Gesucht</dt><dd>'+(it.w?esc(it.w):'Vorschläge willkommen')+'</dd>';
     if(t==='lend')f+='<dt>Dafür</dt><dd>'+(it.dp?esc(it.dp):'Kostenlos')+'</dd>';
     f+='<dt>Zustand</dt><dd>'+esc(it.z||'')+'</dd>';
     if(it.o)f+='<dt>Abholort</dt><dd>'+esc(it.o)+'</dd>';
-    return '<article class="card"><div class="strip '+t+'"><span>'+TYPES[t]+'</span><span>'+esc(it.c||'')+'</span></div>'+
-      '<div class="body"><h3>'+esc(it.ti||'Dein Titel')+'</h3>'+(it.d?'<p class="desc">'+esc(it.d)+'</p>':'')+'<dl class="facts">'+f+'</dl></div>'+
-      '<footer><b>'+esc(it.n||'Ein Dad')+'</b>'+(it.ts?' · '+rel(it.ts):'')+'</footer></article>';
+    var tag=st==='expired'?' <span class="tag">abgelaufen</span>':st==='removed'?' <span class="tag">entfernt</span>':'';
+    var meta=[];
+    meta.push('<b>'+esc(it.n||'Ein Dad')+'</b>'+(it.ts?' · '+rel(it.ts):''));
+    if(st==='ok'&&left(it))meta.push(left(it));
+    if(it.id)meta.push('<span class="nr">Nr. '+esc(it.id)+'</span>');
+    return '<article class="card'+(st!=='ok'?' gone':'')+'"><div class="strip '+t+'"><span>'+TYPES[t]+'</span><span>'+esc(it.c||'')+'</span></div>'+
+      '<div class="body"><h3>'+esc(it.ti||'Dein Titel')+tag+'</h3>'+(it.d?'<p class="desc">'+esc(it.d)+'</p>':'')+'<dl class="facts">'+f+'</dl></div>'+
+      '<footer>'+meta.join(' · ')+'</footer></article>';
   }
 
   function copy(el){
@@ -315,7 +378,8 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     var t=document.querySelector('input[name=type]:checked').value;
     return {t:t,ti:$('ff-title').value.trim(),c:$('ff-cat').value,z:$('ff-cond').value,d:$('ff-desc').value.trim(),
       p:t==='sell'?$('ff-price').value.trim().replace(/\s*€$/,''):'',w:t==='swap'?$('ff-want').value.trim():'',
-      dp:t==='lend'?$('ff-dep').value.trim():'',o:$('ff-place').value.trim(),n:$('ff-name').value.trim()};
+      dp:t==='lend'?$('ff-dep').value.trim():'',o:$('ff-place').value.trim(),n:$('ff-name').value.trim(),
+      v:parseInt($('ff-valid').value,10)||14};
   }
   function syncType(){
     var t=document.querySelector('input[name=type]:checked').value;
@@ -328,6 +392,7 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     if(it.t==='swap'&&it.w)line+=' – gesucht: '+it.w;
     if(it.t==='lend'&&it.dp)line+=' – dafür: '+it.dp;
     if(it.o)line+=' ('+it.o+')';
+    line+='\ngültig bis '+new Date(it.e).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});
     return line+'\nDetails und Anfrage: '+link;
   }
   $('form').addEventListener('input',function(){syncType();preview();$('result').hidden=true});
@@ -338,7 +403,7 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     if(!it.ti){$('err').textContent='Gib dem Inserat einen Titel.';$('ff-title').focus();return}
     if(!it.n){$('err').textContent='Trag deinen Vornamen ein, damit die anderen Dads wissen, wen sie fragen.';$('ff-name').focus();return}
     $('err').textContent='';
-    it.ts=Date.now();
+    it.ts=Date.now();it.e=it.ts+it.v*DAY;it.id=rid();delete it.v;
     try{
       var link=base()+'#i='+await pack(it);
       var m=msgFor(it,link);
@@ -351,17 +416,42 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
   $('out-copy').addEventListener('click',function(){copy($('out-msg'))});
   $('out-new').addEventListener('click',function(){$('form').reset();$('result').hidden=true;syncType();preview();$('ff-title').focus()});
 
-  /* Anfrage */
-  $('askBtn').addEventListener('click',function(){$('askBox').hidden=false;$('ask1').hidden=false;$('ask2').hidden=true;$('ask-note').value='';$('ask-note').focus()});
+  /* Anfrage mit Auswahl, Name und Notiz */
+  function syncOffer(){
+    var o=OFFER[$('ask-act').value];
+    $('ask-offer-g').hidden=!o;
+    if(o){$('ask-offer-l').textContent=o[0];$('ask-offer').placeholder=o[1]}
+  }
+  $('ask-act').addEventListener('change',syncOffer);
+  $('askBtn').addEventListener('click',function(){
+    if(!current)return;
+    var t=ACTS[current.t]?current.t:'sell';
+    $('ask-act').innerHTML=ACTS[t].map(function(a){return '<option value="'+a[0]+'">'+esc(a[1])+'</option>'}).join('');
+    $('ask-when').innerHTML=WHEN.map(function(w){return '<option>'+esc(w)+'</option>'}).join('');
+    $('ask-offer').value='';$('ask-name').value='';$('ask-note').value='';
+    syncOffer();
+    $('doneBox').hidden=true;$('askBox').hidden=false;$('ask1').hidden=false;$('ask2').hidden=true;
+    $('ask-act').focus();
+  });
   $('askMake').addEventListener('click',async function(){
     if(!current)return;
-    var q={ti:current.ti,n:current.n,no:$('ask-note').value.trim(),ts:Date.now()};
+    var a=$('ask-act').value,o=OFFER[a]?$('ask-offer').value.trim():'';
+    var q={ti:current.ti,id:current.id||'',n:current.n,t:current.t,a:a,o:o,w:$('ask-when').value,nm:$('ask-name').value.trim(),no:$('ask-note').value.trim(),ts:Date.now()};
     var link=base()+'#q='+await pack(q);
-    var m='Hammer-Deals | Hi'+(current.n?' '+current.n:'')+', ich hätte Interesse an „'+current.ti+'“. Meine Anfrage: '+link;
+    var m='Hammer-Deals | Hi'+(current.n?' '+current.n:'')+', '+(q.nm?'hier '+q.nm+'. ':'')+'zu „'+current.ti+'“: '+actLabel(a)+(o?' ('+o+(a==='offer'&&isNum(o)?' €':'')+')':'')+'. Meine Anfrage: '+link;
     $('ask-msg').value=m;$('ask-wa').href='https://wa.me/?text='+encodeURIComponent(m);
     $('ask1').hidden=true;$('ask2').hidden=false;
   });
   $('ask-copy').addEventListener('click',function(){copy($('ask-msg'))});
+
+  /* Vergeben melden */
+  $('doneBtn').addEventListener('click',function(){
+    if(!current)return;
+    var m='Hammer-Deal | Vergeben: '+current.ti+'. Danke an alle, die gefragt haben!';
+    $('done-msg').value=m;$('done-wa').href='https://wa.me/?text='+encodeURIComponent(m);
+    $('askBox').hidden=true;$('doneBox').hidden=false;
+  });
+  $('done-copy').addEventListener('click',function(){copy($('done-msg'))});
 
   /* Routing */
   async function route(){
@@ -372,9 +462,26 @@ h2.title{font-family:var(--font-display);font-weight:400;font-size:1.6rem;margin
     try{data=await unpack(m[2])}
     catch(e){fail(e.message==='old'?'Dein Browser ist zu alt für diesen Link. Bitte aktualisiere ihn.':'Der Link ist unvollständig oder beschädigt. Frag in der Gruppe nach dem ganzen Link.');return}
     if(m[1]==='i'){
-      current=data;$('itemCard').innerHTML=card(data);$('askBox').hidden=true;show('viewItem');
+      await loadGone();
+      current=data;
+      var st=stateOf(data),ok=st==='ok';
+      $('itemCard').innerHTML=card(data,st);
+      $('askBox').hidden=true;$('doneBox').hidden=true;
+      $('askBtn').hidden=!ok;$('doneBtn').hidden=!ok;
+      $('itemNote').hidden=ok;
+      $('itemNote').textContent=st==='expired'?'Dieses Inserat ist abgelaufen. Frag in der Gruppe, ob es noch zu haben ist.':'Dieses Inserat wurde entfernt.';
+      show('viewItem');
     }else{
-      $('reqBox').innerHTML='Jemand hat Interesse an deinem Inserat „'+esc(data.ti)+'“.'+(data.no?'<p>Nachricht: '+esc(data.no)+'</p>':'<p>Ohne Nachricht.</p>')+(data.ts?'<p>'+rel(data.ts)+'</p>':'');
+      var f='<dt>Wunsch</dt><dd>'+esc(actLabel(data.a)||'Frage')+'</dd>';
+      if(data.o){
+        var lab=data.a==='offer'?'Gebot':data.a==='swap'?'Tauschangebot':data.a==='lend'?'Zeitraum':'Angebot';
+        f+='<dt>'+lab+'</dt><dd>'+esc(data.o)+(data.a==='offer'&&isNum(data.o)?' €':'')+'</dd>';
+      }
+      if(data.w)f+='<dt>Abholung</dt><dd>'+esc(data.w)+'</dd>';
+      if(data.nm)f+='<dt>Von</dt><dd>'+esc(data.nm)+'</dd>';
+      f+='<dt>Notiz</dt><dd>'+(data.no?esc(data.no):'–')+'</dd>';
+      if(data.ts)f+='<dt>Gesendet</dt><dd>'+rel(data.ts)+'</dd>';
+      $('reqBox').innerHTML='Anfrage für dein Inserat „'+esc(data.ti)+'“<dl class="facts" style="margin-top:8px">'+f+'</dl>';
       show('viewReq');
     }
     window.scrollTo(0,0);
